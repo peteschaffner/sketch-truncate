@@ -1,0 +1,76 @@
+function onRun(context) {
+
+  var sketch = context.api()
+  var document = sketch.selectedDocument
+  var selection = document.selectedLayers
+
+  if (selection.isEmpty) return alert()
+
+  selection.iterate(function(item) {
+    var truncateSymbol = '…'
+
+    var clippedHeight
+    var actualHeight
+    var lineHeight
+
+    var originalText
+    var middleCharPosition
+
+    if (!item.isText) return
+
+    // TODO: implement non-clipped scenario
+    if (item._object.heightIsClipped()) {
+      // Get clipped height
+      clippedHeight = item.frame.height
+
+      // Get actual height
+      item._object.setHeightIsClipped(0)
+      item._object.adjustFrameToFit()
+      actualHeight = item.frame.height
+
+      // Save original text
+      originalText = item.text
+
+      // Set to a single character to get our line height measurement
+      item.text = '-'
+      item._object.adjustFrameToFit()
+      lineHeight = item.frame.height
+
+      // Reset text to the original string
+      item.text = originalText
+
+      // Get desired number of lines
+      numberOfLines = clippedHeight / lineHeight
+
+      // Truncate text
+      if (numberOfLines === 1) {
+        // TODO: provide option to choose 'Middle' or 'End' truncation style
+        while (actualHeight > clippedHeight) {
+          originalText = item.text
+          // `length()` because we are dealing with a WrappedObject
+          middleCharPosition = Math.floor(originalText.length() / 2)
+
+          item.text = originalText.substr(0, middleCharPosition) +
+            truncateSymbol +
+            originalText.substr(middleCharPosition + 2)
+          item._object.adjustFrameToFit()
+          actualHeight = item.frame.height
+        }
+      } else {
+        while (actualHeight > clippedHeight) {
+          item.text = item.text.slice(0,-2) + truncateSymbol
+          item._object.adjustFrameToFit()
+          actualHeight = item.frame.height
+        }
+      }
+
+      // Reset clipped height
+      item._object.setHeightIsClipped(1)
+    }
+  })
+
+  function alert() {
+    sketch.alert('Select a text layer to truncate.', 'No Text Layer Selected')
+  }
+
+}

@@ -1,0 +1,22 @@
+{
+  "name": "Truncate",
+  "description": "Truncate text layers.",
+  "author": "Peter Schaffner",
+  "version": 1.0,
+  "identifier": "me.peteschaffner.sketch.truncate-plugin",
+  "updateURL": "TODO",
+  "compatibleVersion": 41.2,
+  "commands" : [
+    {
+      "name" : "Truncate Text",
+      "identifier" : "truncate",
+      "script" : "script.cocoascript"
+    }
+  ],
+  "menu" : {
+    "isRoot": true,
+    "items" : [
+      "truncate"
+    ]
+  }
+}
